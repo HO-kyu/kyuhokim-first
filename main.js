@@ -1,3 +1,33 @@
+const themeToggle = document.getElementById('checkbox');
+const body = document.documentElement;
+
+// Function to set the theme
+function setTheme(theme) {
+    body.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    if (theme === 'dark') {
+        themeToggle.checked = true;
+    } else {
+        themeToggle.checked = false;
+    }
+}
+
+// Check for saved theme
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme) {
+    setTheme(savedTheme);
+}
+
+// Event listener for the toggle
+themeToggle.addEventListener('change', () => {
+    if (themeToggle.checked) {
+        setTheme('dark');
+    } else {
+        setTheme('light');
+    }
+});
+
+
 const gamesContainer = document.getElementById('games-container');
 const loading = document.getElementById('loading');
 
