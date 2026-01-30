@@ -1,74 +1,129 @@
-<div>Teachable Machine Image Model</div>
-<button type="button" onclick="init()">Start</button>
-<div id="webcam-container"></div>
-<div id="label-container"></div>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
-<script type="text/javascript">
-    // More API functions here:
-    // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
+const webcamMode = document.getElementById('webcam-mode');
+const uploadMode = document.getElementById('upload-mode');
+const webcamContainer = document.getElementById('webcam-container');
+const labelContainer = document.getElementById('label-container');
+const imageUpload = document.getElementById('image-upload');
+const uploadedImage = document.getElementById('uploaded-image');
+const loadingDiv = document.getElementById('loading');
 
-    // the link to your model provided by Teachable Machine export panel
-    const URL = "https://teachablemachine.withgoogle.com/models/w8H3e3Z5G/"; // Using the hosted URL you provided earlier
+const URL = "https://teachablemachine.withgoogle.com/models/w8H3e3Z5G/";
+let model, webcam, maxPredictions;
 
-    let model, webcam, labelContainer, maxPredictions;
+// --- INITIALIZATION ---
 
-    // Load the image model and setup the webcam
-    async function init() {
-        const modelURL = URL + "model.json";
-        const metadataURL = URL + "metadata.json";
-
-        // load the model and metadata
+// Load the model
+async function loadModel() {
+    loadingDiv.style.display = 'block';
+    const modelURL = URL + "model.json";
+    const metadataURL = URL + "metadata.json";
+    try {
         model = await tmImage.load(modelURL, metadataURL);
         maxPredictions = model.getTotalClasses();
-
-        // Convenience function to setup a webcam
-        const flip = true; // whether to flip the webcam
-        webcam = new tmImage.Webcam(200, 200, flip); // width, height, flip
-        await webcam.setup(); // request access to the webcam
-        await webcam.play();
-        window.requestAnimationFrame(loop);
-
-        // append elements to the DOM
-        document.getElementById("webcam-container").appendChild(webcam.canvas);
-        labelContainer = document.getElementById("label-container");
-        for (let i = 0; i < maxPredictions; i++) { // and class labels
-            labelContainer.appendChild(document.createElement("div"));
-        }
+    } catch (err) {
+        console.error("Model loading failed:", err);
+        alert("Failed to load the model. Please check the console for details.");
+    } finally {
+        loadingDiv.style.display = 'none';
     }
+}
+// Load model as soon as the page loads
+window.onload = loadModel;
 
-    async function loop() {
-        webcam.update(); // update the webcam frame
-        await predict();
-        window.requestAnimationFrame(loop);
-    }
+// --- MODE SWITCHING ---
 
-    // run the webcam image through the image model
-    async function predict() {
-        // predict can take in an image, video or canvas html element
-        const prediction = await model.predict(webcam.canvas);
-
-        let dogPrediction = { className: 'Dog', probability: 0 };
-        let catPrediction = { className: 'Cat', probability: 0 };
-
-        for (let i = 0; i < maxPredictions; i++) {
-            const classPrediction = prediction[i];
-            if (classPrediction.className.toLowerCase().includes('dog')) {
-                dogPrediction = classPrediction;
-            } else if (classPrediction.className.toLowerCase().includes('cat')) {
-                catPrediction = classPrediction;
-            }
-        }
-
-        if (dogPrediction.probability > catPrediction.probability) {
-            labelContainer.childNodes[0].innerHTML = `You look like a Dog! 🐶 (Confidence: ${Math.round(dogPrediction.probability * 100)}%)`;
-            labelContainer.childNodes[1].innerHTML = ''; // Clear other label
-        } else if (catPrediction.probability > dogPrediction.probability) {
-            labelContainer.childNodes[0].innerHTML = `You look like a Cat! 🐱 (Confidence: ${Math.round(catPrediction.probability * 100)}%)`;
-            labelContainer.childNodes[1].innerHTML = ''; // Clear other label
+document.querySelectorAll('input[name="mode"]').forEach(radio => {
+    radio.addEventListener('change', (event) => {
+        if (event.target.value === 'webcam') {
+            webcamMode.style.display = 'block';
+            uploadMode.style.display = 'none';
+            if (webcam && webcam.running) webcam.stop(); // Stop webcam if running
+            labelContainer.innerHTML = '';
         } else {
-            labelContainer.childNodes[0].innerHTML = "Hmm, I can't seem to decide... try again!";
-            labelContainer.childNodes[1].innerHTML = ''; // Clear other label
+            webcamMode.style.display = 'none';
+            uploadMode.style.display = 'block';
+            if (webcam && webcam.running) webcam.stop(); // Stop webcam if running
+            labelContainer.innerHTML = '';
+        }
+    });
+});
+
+// --- WEBCAM LOGIC ---
+
+// Setup and start the webcam
+async function initWebcam() {
+    if (!model) {
+        alert("Model not loaded yet. Please wait.");
+        return;
+    }
+    const flip = true;
+    webcam = new tmImage.Webcam(200, 200, flip);
+    try {
+        await webcam.setup();
+        await webcam.play();
+        webcamContainer.innerHTML = ''; // Clear previous canvas
+        webcamContainer.appendChild(webcam.canvas);
+        window.requestAnimationFrame(loop);
+    } catch (err) {
+        console.error("Webcam setup failed:", err);
+        alert("Could not access the webcam. Please ensure it's not in use and permissions are allowed.");
+    }
+}
+
+async function loop() {
+    if (webcam.running) {
+        webcam.update();
+        await predictFromWebcam();
+        window.requestAnimationFrame(loop);
+    }
+}
+
+async function predictFromWebcam() {
+    const prediction = await model.predict(webcam.canvas);
+    displayPrediction(prediction);
+}
+
+
+// --- UPLOAD LOGIC ---
+
+imageUpload.addEventListener('change', async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (!model) {
+        alert("Model not loaded yet. Please wait.");
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        uploadedImage.src = e.target.result;
+        uploadedImage.style.display = 'block';
+        // Predict from the uploaded image
+        const prediction = await model.predict(uploadedImage);
+        displayPrediction(prediction);
+    };
+    reader.readAsDataURL(file);
+});
+
+
+// --- SHARED PREDICTION DISPLAY LOGIC ---
+
+function displayPrediction(prediction) {
+    let highestProb = 0;
+    let bestClass = '';
+
+    for (let i = 0; i < maxPredictions; i++) {
+        if (prediction[i].probability > highestProb) {
+            highestProb = prediction[i].probability;
+            bestClass = prediction[i].className;
         }
     }
-</script>
+
+    let emoji = '';
+    if (bestClass.toLowerCase().includes('dog')) {
+        emoji = '🐶';
+    } else if (bestClass.toLowerCase().includes('cat')) {
+        emoji = '🐱';
+    }
+
+    labelContainer.innerHTML = `You look like a ${bestClass}! ${emoji} (Confidence: ${Math.round(highestProb * 100)}%)`;
+}

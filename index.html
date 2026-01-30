@@ -3,22 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Which Pet Do You Look Like? (Webcam)</title>
+    <title>Which Pet Do You Look Like?</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Load TensorFlow.js -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-    <!-- Load Teachable Machine Image -->
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 </head>
 <body>
-    <h1>Which Pet Do You Look Like? (Webcam)</h1>
-    <p>Click "Start" to enable your webcam and find out!</p>
+    <h1>Which Pet Do You Look Like?</h1>
+    <p>Use your webcam or upload a photo to see if you resemble a dog or a cat!</p>
 
-    <button type="button" onclick="init()">Start</button>
-    <div id="webcam-container"></div>
+    <div class="mode-selector">
+        <label><input type="radio" name="mode" value="webcam" checked> Webcam</label>
+        <label><input type="radio" name="mode" value="upload"> Upload File</label>
+    </div>
+
+    <!-- Webcam Mode -->
+    <div id="webcam-mode" class="mode-content">
+        <button type="button" onclick="initWebcam()">Start Webcam</button>
+        <div id="webcam-container"></div>
+    </div>
+
+    <!-- Upload Mode -->
+    <div id="upload-mode" class="mode-content" style="display: none;">
+        <input type="file" id="image-upload" accept="image/*">
+        <div id="image-container">
+            <img id="uploaded-image" src="#" alt="Your upload" style="display:none;"/>
+        </div>
+    </div>
+
     <div id="label-container"></div>
+
     <div id="loading" style="display:none;">
-        <p>Loading model and setting up webcam...</p>
+        <p>Loading model...</p>
         <div class="loader"></div>
     </div>
 
