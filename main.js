@@ -108,6 +108,12 @@ imageUpload.addEventListener('change', async (event) => {
 // --- SHARED PREDICTION DISPLAY LOGIC ---
 
 function displayPrediction(prediction) {
+    // Guard clause for empty predictions
+    if (!prediction || prediction.length === 0) {
+        labelContainer.innerHTML = "Could not get a prediction. Try a different image or angle.";
+        return;
+    }
+
     let highestProb = 0;
     let bestClass = '';
 
