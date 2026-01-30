@@ -1,65 +1,52 @@
-const imageUpload = document.getElementById('image-upload');
-const uploadedImage = document.getElementById('uploaded-image');
-const predictButton = document.getElementById('predict-button');
-const predictionResult = document.getElementById('prediction');
-const loadingDiv = document.getElementById('loading');
+<div>Teachable Machine Image Model</div>
+<button type="button" onclick="init()">Start</button>
+<div id="webcam-container"></div>
+<div id="label-container"></div>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+<script type="text/javascript">
+    // More API functions here:
+    // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
 
-let model, maxPredictions;
+    // the link to your model provided by Teachable Machine export panel
+    const URL = "https://teachablemachine.withgoogle.com/models/w8H3e3Z5G/"; // Using the hosted URL you provided earlier
 
-// Teachable Machine model URL
-const URL = "https://teachablemachine.withgoogle.com/models/w8H3e3Z5G/";
+    let model, webcam, labelContainer, maxPredictions;
 
-// Load the model
-async function loadModel() {
-    loadingDiv.style.display = 'block';
-    const modelURL = URL + "model.json";
-    const metadataURL = URL + "metadata.json";
+    // Load the image model and setup the webcam
+    async function init() {
+        const modelURL = URL + "model.json";
+        const metadataURL = URL + "metadata.json";
 
-    try {
+        // load the model and metadata
         model = await tmImage.load(modelURL, metadataURL);
         maxPredictions = model.getTotalClasses();
-        loadingDiv.style.display = 'none';
-        console.log('Teachable Machine model loaded successfully!');
-    } catch (err) {
-        console.error('Failed to load Teachable Machine model', err);
-        predictionResult.innerText = 'Failed to load model. Please try again.';
-        loadingDiv.style.display = 'none';
-    }
-}
 
-// Immediately start loading the model when the script runs
-loadModel();
+        // Convenience function to setup a webcam
+        const flip = true; // whether to flip the webcam
+        webcam = new tmImage.Webcam(200, 200, flip); // width, height, flip
+        await webcam.setup(); // request access to the webcam
+        await webcam.play();
+        window.requestAnimationFrame(loop);
 
-// Handle image upload
-imageUpload.addEventListener('change', (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            uploadedImage.src = e.target.result;
-            uploadedImage.style.display = 'block';
-            predictionResult.innerText = ''; // Clear previous prediction
-        };
-        reader.readAsDataURL(file);
-    }
-});
-
-// Handle prediction
-predictButton.addEventListener('click', async () => {
-    if (!model) {
-        predictionResult.innerText = 'Model is not loaded yet. Please wait.';
-        return;
-    }
-    if (!uploadedImage.src || uploadedImage.style.display === 'none') {
-        predictionResult.innerText = 'Please upload an image first!';
-        return;
+        // append elements to the DOM
+        document.getElementById("webcam-container").appendChild(webcam.canvas);
+        labelContainer = document.getElementById("label-container");
+        for (let i = 0; i < maxPredictions; i++) { // and class labels
+            labelContainer.appendChild(document.createElement("div"));
+        }
     }
 
-    loadingDiv.style.display = 'block';
+    async function loop() {
+        webcam.update(); // update the webcam frame
+        await predict();
+        window.requestAnimationFrame(loop);
+    }
 
-    try {
-        // Predict with the image
-        const prediction = await model.predict(uploadedImage);
+    // run the webcam image through the image model
+    async function predict() {
+        // predict can take in an image, video or canvas html element
+        const prediction = await model.predict(webcam.canvas);
 
         let dogPrediction = { className: 'Dog', probability: 0 };
         let catPrediction = { className: 'Cat', probability: 0 };
@@ -74,17 +61,14 @@ predictButton.addEventListener('click', async () => {
         }
 
         if (dogPrediction.probability > catPrediction.probability) {
-            predictionResult.innerText = `You look like a Dog! 🐶 (Confidence: ${Math.round(dogPrediction.probability * 100)}%)`;
+            labelContainer.childNodes[0].innerHTML = `You look like a Dog! 🐶 (Confidence: ${Math.round(dogPrediction.probability * 100)}%)`;
+            labelContainer.childNodes[1].innerHTML = ''; // Clear other label
         } else if (catPrediction.probability > dogPrediction.probability) {
-            predictionResult.innerText = `You look like a Cat! 🐱 (Confidence: ${Math.round(catPrediction.probability * 100)}%)`;
+            labelContainer.childNodes[0].innerHTML = `You look like a Cat! 🐱 (Confidence: ${Math.round(catPrediction.probability * 100)}%)`;
+            labelContainer.childNodes[1].innerHTML = ''; // Clear other label
         } else {
-            predictionResult.innerText = "Hmm, I can't seem to decide... try another photo!";
+            labelContainer.childNodes[0].innerHTML = "Hmm, I can't seem to decide... try again!";
+            labelContainer.childNodes[1].innerHTML = ''; // Clear other label
         }
-
-    } catch (err) {
-        console.error('Prediction failed', err);
-        predictionResult.innerText = 'Oops, something went wrong during prediction.';
-    } finally {
-        loadingDiv.style.display = 'none';
     }
-});
+</script>

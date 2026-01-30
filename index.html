@@ -3,29 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Which Pet Do You Look Like?</title>
+    <title>Which Pet Do You Look Like? (Webcam)</title>
     <link rel="stylesheet" href="style.css">
     <!-- Load TensorFlow.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <!-- Load Teachable Machine Image -->
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 </head>
 <body>
-    <h1>Which Pet Do You Look Like?</h1>
-    <p>Upload a photo of yourself to see if you look more like a dog or a cat!</p>
+    <h1>Which Pet Do You Look Like? (Webcam)</h1>
+    <p>Click "Start" to enable your webcam and find out!</p>
 
-    <div id="upload-container">
-        <input type="file" id="image-upload" accept="image/*">
-        <button id="predict-button">Let's see!</button>
-    </div>
-
-    <div id="result-container">
-        <img id="uploaded-image" src="#" alt="Your uploaded image" style="display:none;"/>
-        <div id="prediction"></div>
-    </div>
-
+    <button type="button" onclick="init()">Start</button>
+    <div id="webcam-container"></div>
+    <div id="label-container"></div>
     <div id="loading" style="display:none;">
-        <p>Loading model and making prediction...</p>
+        <p>Loading model and setting up webcam...</p>
         <div class="loader"></div>
     </div>
 
