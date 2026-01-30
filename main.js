@@ -1,85 +1,89 @@
-const themeToggle = document.getElementById('checkbox');
-const body = document.documentElement;
+const imageUpload = document.getElementById('image-upload');
+const uploadedImage = document.getElementById('uploaded-image');
+const predictButton = document.getElementById('predict-button');
+const predictionResult = document.getElementById('prediction');
+const loadingDiv = document.getElementById('loading');
 
-// Function to set the theme
-function setTheme(theme) {
-    body.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-    if (theme === 'dark') {
-        themeToggle.checked = true;
-    } else {
-        themeToggle.checked = false;
+let model;
+
+// 1. Load the model
+async function loadModel() {
+    loadingDiv.style.display = 'block';
+    try {
+        model = await mobilenet.load();
+        loadingDiv.style.display = 'none';
+        console.log('Model loaded successfully!');
+    } catch (err) {
+        console.error('Failed to load model', err);
+        predictionResult.innerText = 'Failed to load model. Please try again.';
+        loadingDiv.style.display = 'none';
     }
 }
 
-// Check for saved theme
-const savedTheme = localStorage.getItem('theme');
-if (savedTheme) {
-    setTheme(savedTheme);
-}
+// Immediately start loading the model when the script runs
+loadModel();
 
-// Event listener for the toggle
-themeToggle.addEventListener('change', () => {
-    if (themeToggle.checked) {
-        setTheme('dark');
-    } else {
-        setTheme('light');
+// 2. Handle image upload
+imageUpload.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            uploadedImage.src = e.target.result;
+            uploadedImage.style.display = 'block';
+            predictionResult.innerText = ''; // Clear previous prediction
+        };
+        reader.readAsDataURL(file);
     }
 });
 
+// 3. Handle prediction
+predictButton.addEventListener('click', async () => {
+    if (!model) {
+        predictionResult.innerText = 'Model is not loaded yet. Please wait.';
+        return;
+    }
+    if (!uploadedImage.src || uploadedImage.style.display === 'none') {
+        predictionResult.innerText = 'Please upload an image first!';
+        return;
+    }
 
-const gamesContainer = document.getElementById('games-container');
-const loading = document.getElementById('loading');
+    loadingDiv.style.display = 'block';
 
-const API_URL = 'https://www.balldontlie.io/api/v1/games';
+    try {
+        const predictions = await model.classify(uploadedImage);
+        console.log('Predictions:', predictions);
 
-// Get today's date in YYYY-MM-DD format
-const today = new Date();
-const year = today.getFullYear();
-const month = String(today.getMonth() + 1).padStart(2, '0');
-const day = String(today.getDate()).padStart(2, '0');
-const todayDate = `${year}-${month}-${day}`;
+        let isDog = false;
+        let isCat = false;
+        let dogConfidence = 0;
+        let catConfidence = 0;
 
-// URL to get today's games
-const url = `${API_URL}?dates[]=${todayDate}`;
-
-fetch(url)
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
-    .then(data => {
-        loading.style.display = 'none';
-        const games = data.data;
-
-        if (games.length === 0) {
-            gamesContainer.innerHTML = '<p>No games scheduled for today.</p>';
-            return;
-        }
-
-        games.forEach(game => {
-            const gameElement = document.createElement('div');
-            gameElement.classList.add('game');
-
-            const homeTeam = game.home_team.full_name;
-            const visitorTeam = game.visitor_team.full_name;
-            const homeScore = game.home_team_score;
-            const visitorScore = game.visitor_team_score;
-            const status = game.status;
-
-            gameElement.innerHTML = `
-                <h2>${visitorTeam} at ${homeTeam}</h2>
-                <p><strong>Status:</strong> ${status}</p>
-                <p><strong>Score:</strong> ${visitorScore} - ${homeScore}</p>
-            `;
-
-            gamesContainer.appendChild(gameElement);
+        predictions.forEach(p => {
+            const className = p.className.toLowerCase();
+            // MobileNet has many specific breeds, so we check for common terms
+            if (className.includes('dog') || className.includes('canine') || className.includes('retriever') || className.includes('terrier') || className.includes('shepherd')) {
+                isDog = true;
+                dogConfidence = Math.max(dogConfidence, p.probability);
+            }
+            if (className.includes('cat') || className.includes('feline') || className.includes('tabby') || className.includes('siamese')) {
+                isCat = true;
+                catConfidence = Math.max(catConfidence, p.probability);
+            }
         });
-    })
-    .catch(error => {
-        loading.style.display = 'none';
-        gamesContainer.innerHTML = `<p>Sorry, there was an error fetching the game data. Please try again later.</p><p>Error: ${error.message}</p>`;
-        console.error('There has been a problem with your fetch operation:', error);
-    });
+
+        if (isDog && dogConfidence > catConfidence) {
+            predictionResult.innerText = `You look like a Dog! 🐶 (Confidence: ${Math.round(dogConfidence * 100)}%)`;
+        } else if (isCat) {
+            predictionResult.innerText = `You look like a Cat! 🐱 (Confidence: ${Math.round(catConfidence * 100)}%)`;
+        } else {
+            predictionResult.innerText = "Hmm, I can't seem to decide... try another photo!";
+        }
+
+    } catch (err) {
+        console.error('Prediction failed', err);
+        predictionResult.innerText = 'Oops, something went wrong during prediction.';
+    } finally {
+        loadingDiv.style.display = 'none';
+    }
+});
