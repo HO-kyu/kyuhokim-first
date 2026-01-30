@@ -4,17 +4,24 @@ const predictButton = document.getElementById('predict-button');
 const predictionResult = document.getElementById('prediction');
 const loadingDiv = document.getElementById('loading');
 
-let model;
+let model, maxPredictions;
 
-// 1. Load the model
+// Teachable Machine model URL
+const URL = "https://teachablemachine.withgoogle.com/models/w8H3e3Z5G/";
+
+// Load the model
 async function loadModel() {
     loadingDiv.style.display = 'block';
+    const modelURL = URL + "model.json";
+    const metadataURL = URL + "metadata.json";
+
     try {
-        model = await mobilenet.load();
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
         loadingDiv.style.display = 'none';
-        console.log('Model loaded successfully!');
+        console.log('Teachable Machine model loaded successfully!');
     } catch (err) {
-        console.error('Failed to load model', err);
+        console.error('Failed to load Teachable Machine model', err);
         predictionResult.innerText = 'Failed to load model. Please try again.';
         loadingDiv.style.display = 'none';
     }
@@ -23,7 +30,7 @@ async function loadModel() {
 // Immediately start loading the model when the script runs
 loadModel();
 
-// 2. Handle image upload
+// Handle image upload
 imageUpload.addEventListener('change', (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -37,7 +44,7 @@ imageUpload.addEventListener('change', (event) => {
     }
 });
 
-// 3. Handle prediction
+// Handle prediction
 predictButton.addEventListener('click', async () => {
     if (!model) {
         predictionResult.innerText = 'Model is not loaded yet. Please wait.';
@@ -51,31 +58,25 @@ predictButton.addEventListener('click', async () => {
     loadingDiv.style.display = 'block';
 
     try {
-        const predictions = await model.classify(uploadedImage);
-        console.log('Predictions:', predictions);
+        // Predict with the image
+        const prediction = await model.predict(uploadedImage);
 
-        let isDog = false;
-        let isCat = false;
-        let dogConfidence = 0;
-        let catConfidence = 0;
+        let dogPrediction = { className: 'Dog', probability: 0 };
+        let catPrediction = { className: 'Cat', probability: 0 };
 
-        predictions.forEach(p => {
-            const className = p.className.toLowerCase();
-            // MobileNet has many specific breeds, so we check for common terms
-            if (className.includes('dog') || className.includes('canine') || className.includes('retriever') || className.includes('terrier') || className.includes('shepherd')) {
-                isDog = true;
-                dogConfidence = Math.max(dogConfidence, p.probability);
+        for (let i = 0; i < maxPredictions; i++) {
+            const classPrediction = prediction[i];
+            if (classPrediction.className.toLowerCase().includes('dog')) {
+                dogPrediction = classPrediction;
+            } else if (classPrediction.className.toLowerCase().includes('cat')) {
+                catPrediction = classPrediction;
             }
-            if (className.includes('cat') || className.includes('feline') || className.includes('tabby') || className.includes('siamese')) {
-                isCat = true;
-                catConfidence = Math.max(catConfidence, p.probability);
-            }
-        });
+        }
 
-        if (isDog && dogConfidence > catConfidence) {
-            predictionResult.innerText = `You look like a Dog! 🐶 (Confidence: ${Math.round(dogConfidence * 100)}%)`;
-        } else if (isCat) {
-            predictionResult.innerText = `You look like a Cat! 🐱 (Confidence: ${Math.round(catConfidence * 100)}%)`;
+        if (dogPrediction.probability > catPrediction.probability) {
+            predictionResult.innerText = `You look like a Dog! 🐶 (Confidence: ${Math.round(dogPrediction.probability * 100)}%)`;
+        } else if (catPrediction.probability > dogPrediction.probability) {
+            predictionResult.innerText = `You look like a Cat! 🐱 (Confidence: ${Math.round(catPrediction.probability * 100)}%)`;
         } else {
             predictionResult.innerText = "Hmm, I can't seem to decide... try another photo!";
         }
