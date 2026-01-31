@@ -3,82 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>나는 어떤 동물을 닮았을까? - AI 동물상 테스트</title>
-    <meta name="description" content="AI 인공지능 동물상 테스트! 사진을 업로드해서 나는 어떤 동물상인지 확인해보세요!">
+    <title>Pet-Alike 블로그 - AI 동물상 테스트와 재미있는 이야기</title>
+    <meta name="description" content="AI가 찾아주는 당신의 동물상! 최신 AI 기술 소식과 동물들의 재미있는 성격 이야기, 저희 서비스의 비하인드 스토리를 블로그에서 만나보세요.">
     
     <!-- Google AdSense -->
     <meta name="google-adsense-account" content="ca-pub-5908945966023993">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5908945966023993" crossorigin="anonymous"></script>
 
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 </head>
 <body>
 
     <header>
         <nav>
-            <a href="#home" class="nav-logo">Pet-Alike</a>
+            <a href="index.html" class="nav-logo">Pet-Alike 블로그</a>
             <ul>
-                <li><a href="#home">홈</a></li>
-                <li><a href="#about">소개</a></li>
-                <li><a href="#contact">문의하기</a></li>
-                <li><a href="#privacy">개인정보처리방침</a></li>
+                <li><a href="index.html">홈</a></li>
+                <li><a href="tool.html">동물상 테스트하기</a></li>
             </ul>
         </nav>
     </header>
 
-    <main id="home">
-        <section class="tool-section">
-            <h1>나는 어떤 동물을 닮았을까?</h1>
-            <p>사진을 업로드하여 AI가 당신을 어떤 동물상으로 판단하는지 확인해보세요!</p>
+    <main>
+        <div class="hero">
+            <h1>AI가 찾아주는 당신의 동물상</h1>
+            <p>최신 AI 기술 소식과 동물들의 재미있는 성격 이야기, 저희 서비스의 비하인드 스토리를 만나보세요.</p>
+            <a href="tool.html" class="cta-button">지금 바로 테스트하기</a>
+        </div>
 
-            <!-- AdSense Placeholder -->
-            <ins class="adsbygoogle" style="display:block; text-align:center;" data-ad-layout="in-article" data-ad-format="fluid" data-ad-client="ca-pub-5908945966023993" data-ad-slot="YOUR_AD_SLOT_ID"></ins>
+        <!-- AdSense Placeholder -->
+        <div class="ad-container">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5908945966023993" data-ad-slot="YOUR_AD_SLOT_ID_1" data-ad-format="auto" data-full-width-responsive="true"></ins>
             <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
 
-            <div id="upload-mode" class="mode-content">
-                <input type="file" id="image-upload" accept="image/*">
-                <div id="image-container">
-                    <img id="uploaded-image" src="#" alt="업로드된 이미지" style="display:none;"/>
-                </div>
-            </div>
-            
-            <div id="label-container"></div>
-            <div id="loading" style="display:none;"><p>모델을 불러오는 중입니다...</p><div class="loader"></div></div>
-        </section>
+        <div class="article-list">
+            <h2>최신 글</h2>
+            <article>
+                <h3>AI 동물상 분석기: 어떻게 작동하나요?</h3>
+                <p>저희 'Pet-Alike' 서비스의 핵심 기술인 머신러닝과 Teachable Machine에 대해 알아보고, 어떻게 여러분의 얼굴에서 동물의 특징을 찾아내는지 그 원리를 쉽게 설명해 드립니다.</p>
+                <a href="#" class="read-more" data-article="1">더 읽어보기 &rarr;</a>
+            </article>
+            <article>
+                <h3>동물상으로 보는 성격: 당신은 댕댕이? 냥이?</h3>
+                <p>강아지상의 사람들은 활기차고 사교적일까요? 고양이상의 사람들은 독립적이고 차분할까요? 동물상과 성격의 흥미로운 연관성에 대한 이야기를 탐구해봅니다.</p>
+                <a href="#" class="read-more" data-article="2">더 읽어보기 &rarr;</a>
+            </article>
+            <article>
+                <h3>AI가 뽑은 금주의 '빵 터지는' 동물 매칭</h3>
+                <p>사용자 여러분의 재미있는 AI 동물상 매칭 결과를 소개합니다! 이번 주에는 어떤 놀랍고 재미있는 결과들이 있었을까요? 여러분도 최고의 매칭에 도전해보세요.</p>
+                <a href="#" class="read-more" data-article="3">더 읽어보기 &rarr;</a>
+            </article>
+        </div>
 
-        <section id="about" class="content-section">
-            <h2>서비스 소개</h2>
-            <p>당신은 어떤 동물의 특징을 가장 많이 가졌을까요? 저희 'Pet-Alike' 서비스는 머신러닝 기술을 사용하여 당신의 얼굴 특징을 분석하고, 어떤 동물과 가장 닮았는지 알려드립니다!</p>
-            <p>이 재미있는 실험은 Google의 'Teachable Machine'이라는 기술을 기반으로 만들어졌습니다. 저희는 강아지, 고양이, 말, 호랑이 등 수많은 동물의 이미지를 컴퓨터 모델에 학습시켰습니다. 이 모델은 계속해서 더 많은 동물을 학습하고 발전하고 있습니다. 당신의 얼굴 사진을 업로드하면, 모델은 학습한 패턴을 기반으로 최선의 추측을 내놓습니다. 모든 과정은 사용자의 브라우저 안에서만 이루어지며, 저희는 여러분의 이미지를 절대 보거나 저장하지 않습니다.</p>
-        </section>
+        <div id="article-viewer" class="hidden">
+            <button id="close-article">X 닫기</button>
+            <div id="article-content"></div>
+        </div>
 
-        <section id="contact" class="content-section">
-            <h2>문의하기</h2>
-            <p>질문, 파트너십 문의, 또는 그냥 인사를 나누고 싶으시다면 아래 양식을 통해 저희 팀에 연락해주세요.</p>
-            <form action="https://formspree.io/f/xojwrnop" method="POST" id="contact-form">
-                <label for="email">이메일 주소:</label>
-                <input type="email" name="email" id="email" required>
-                <label for="message">메시지:</label>
-                <textarea name="message" id="message" required></textarea>
-                <button type="submit">보내기</button>
-            </form>
-        </section>
-
-        <section id="privacy" class="content-section">
-            <h2>개인정보처리방침</h2>
-            <p>여러분의 개인정보는 저희에게 매우 중요합니다. 이 방침은 저희가 데이터를 어떻게 처리하는지 설명합니다.</p>
-            <p><strong>이미지 처리:</strong> 업로드된 파일의 모든 이미지 분석은 전적으로 사용자의 기기 내 웹 브라우저에서만 발생합니다. 여러분의 이미지는 저희 서버로 전송되지 않으며, 어떤 방식으로도 저장되지 않습니다.</p>
-            <p><strong>문의 양식:</strong> 문의 양식을 사용하시는 경우, 제공하신 정보(이메일 및 메시지)는 저희가 회신할 수 있도록 Formspree 서비스를 통해 저희에게 전송됩니다. 이 양식을 통해 민감한 정보를 보내지 마십시오.</p>
-        </section>
-
-        <div id="disqus_thread" class="content-section"></div>
-        <script>
-            var disqus_config = function () { this.page.url = window.location.href; this.page.identifier = window.location.pathname; };
-            (function() { var d = document, s = d.createElement('script'); s.src = 'https://https-kyuhokim-first-pages-dev.disqus.com/embed.js'; s.setAttribute('data-timestamp', +new Date()); (d.head || d.body).appendChild(s); })();
-        </script>
-        <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
     </main>
 
     <footer>

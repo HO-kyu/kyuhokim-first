@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 동물상 테스트하기 - Pet-Alike</title>
+    <meta name="description" content="AI 인공지능 동물상 테스트! 사진을 업로드해서 나는 어떤 동물상인지 확인해보세요!">
+    
+    <!-- Google AdSense -->
+    <meta name="google-adsense-account" content="ca-pub-5908945966023993">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5908945966023993" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+</head>
+<body>
+
+    <header>
+        <nav>
+            <a href="index.html" class="nav-logo">Pet-Alike 블로그</a>
+            <ul>
+                <li><a href="index.html">홈</a></li>
+                <li><a href="tool.html">동물상 테스트하기</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="tool-section-standalone">
+            <h1>나는 어떤 동물을 닮았을까?</h1>
+            <p>아래에서 사진을 업로드하여 AI가 당신의 동물상을 찾아내도록 해보세요!</p>
+
+            <!-- AdSense Placeholder -->
+            <ins class="adsbygoogle" style="display:block; text-align:center;" data-ad-layout="in-article" data-ad-format="fluid" data-ad-client="ca-pub-5908945966023993" data-ad-slot="YOUR_AD_SLOT_ID_2"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+            
+            <div id="upload-mode" class="mode-content">
+                <input type="file" id="image-upload" accept="image/*">
+                <div id="image-container">
+                    <img id="uploaded-image" src="#" alt="업로드된 이미지" style="display:none;"/>
+                </div>
+            </div>
+            
+            <div id="label-container"></div>
+            <div id="loading" style="display:none;"><p>모델을 불러오는 중입니다...</p><div class="loader"></div></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Pet-Alike. 모든 권리 보유.</p>
+    </footer>
+
+    <script src="tool.js"></script>
+</body>
+</html>
