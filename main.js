@@ -58,13 +58,18 @@ function displayPrediction(prediction) {
         return;
     }
 
-    // Find the class with the highest probability
-    let bestPrediction = prediction.reduce((max, current) => {
-        return current.probability > max.probability ? current : max;
-    });
+    // Find the class with the highest probability using a for loop
+    let bestClass = '';
+    let highestProb = -1;
+    for (let i = 0; i < prediction.length; i++) {
+        if (prediction[i].probability > highestProb) {
+            highestProb = prediction[i].probability;
+            bestClass = prediction[i].className;
+        }
+    }
 
-    const animalName = bestPrediction.className;
-    const confidence = bestPrediction.probability;
+    const animalName = bestClass;
+    const confidence = highestProb;
 
     // Map animal names to emojis
     const emojiMap = {
