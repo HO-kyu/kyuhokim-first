@@ -6,7 +6,7 @@ const imageUpload = document.getElementById('image-upload');
 const uploadedImage = document.getElementById('uploaded-image');
 const loadingDiv = document.getElementById('loading');
 
-const URL = "https://teachablemachine.withgoogle.com/models/w8H3e3Z5G/";
+const URL = "https://teachablemachine.withgoogle.com/models/u1uI_WuzB/";
 let model, webcam, maxPredictions;
 
 // --- INITIALIZATION ---
