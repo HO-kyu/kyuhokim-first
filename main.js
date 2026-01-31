@@ -29,7 +29,7 @@ window.onload = loadModel;
 
 // --- UPLOAD LOGIC ---
 
-imageUpload.addEventListener('change', async (event) => {
+imageUpload.addEventListener('change', (event) => {
     const file = event.target.files[0];
     if (!file) return;
     if (!model) {
@@ -38,12 +38,16 @@ imageUpload.addEventListener('change', async (event) => {
     }
 
     const reader = new FileReader();
-    reader.onload = async (e) => {
+    reader.onload = (e) => {
+        // Set the image source
         uploadedImage.src = e.target.result;
         uploadedImage.style.display = 'block';
-        // Predict from the uploaded image
-        const prediction = await model.predict(uploadedImage);
-        displayPrediction(prediction);
+
+        // Wait for the image to load before predicting
+        uploadedImage.onload = async () => {
+            const prediction = await model.predict(uploadedImage);
+            displayPrediction(prediction);
+        }
     };
     reader.readAsDataURL(file);
 });
