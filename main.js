@@ -58,27 +58,27 @@ function displayPrediction(prediction) {
         return;
     }
 
-    let highestProb = 0;
-    let bestClass = '';
+    // Find the class with the highest probability
+    let bestPrediction = prediction.reduce((max, current) => {
+        return current.probability > max.probability ? current : max;
+    });
 
-    for (let i = 0; i < maxPredictions; i++) {
-        if (prediction[i].probability > highestProb) {
-            highestProb = prediction[i].probability;
-            bestClass = prediction[i].className;
-        }
-    }
+    const animalName = bestPrediction.className;
+    const confidence = bestPrediction.probability;
 
-    let emoji = '';
-    let animalName = '';
-    if (bestClass.toLowerCase().includes('dog')) {
-        emoji = '🐶';
-        animalName = '강아지';
-    } else if (bestClass.toLowerCase().includes('cat')) {
-        emoji = '🐱';
-        animalName = '고양이';
-    } else {
-        animalName = bestClass;
-    }
+    // Map animal names to emojis
+    const emojiMap = {
+        '강아지': '🐶',
+        '고양이': '🐱',
+        '말': '🐴',
+        '호랑이': '🐯',
+        'Dog': '🐶',
+        'Cat': '🐱',
+        'Horse': '🐴',
+        'Tiger': '🐯'
+    };
 
-    labelContainer.innerHTML = `당신은 ${animalName}상 입니다! ${emoji} (정확도: ${Math.round(highestProb * 100)}%)`;
+    const emoji = emojiMap[animalName] || '❓';
+
+    labelContainer.innerHTML = `당신은 ${animalName}상 입니다! ${emoji} (정확도: ${Math.round(confidence * 100)}%)`;
 }
