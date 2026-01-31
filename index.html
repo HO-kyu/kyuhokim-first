@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Which Pet Do You Look Like? - A Fun AI Experiment</title>
-    <meta name="description" content="Find out if you look more like a dog or a cat using our fun AI-powered tool. Use your webcam or upload a photo to see your pet look-alike!">
+    <title>나는 어떤 동물을 닮았을까? - AI 동물상 테스트</title>
+    <meta name="description" content="AI 인공지능 동물상 테스트! 사진을 업로드해서 내가 강아지상인지 고양이상인지 확인해보세요!">
     
     <!-- Google AdSense -->
     <meta name="google-adsense-account" content="ca-pub-5908945966023993">
@@ -20,59 +20,57 @@
         <nav>
             <a href="#home" class="nav-logo">Pet-Alike</a>
             <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#contact">Contact</a></li>
-                <li><a href="#privacy">Privacy</a></li>
+                <li><a href="#home">홈</a></li>
+                <li><a href="#about">소개</a></li>
+                <li><a href="#contact">문의하기</a></li>
+                <li><a href="#privacy">개인정보처리방침</a></li>
             </ul>
         </nav>
     </header>
 
     <main id="home">
         <section class="tool-section">
-            <h1>Which Pet Do You Look Like?</h1>
-            <p>Use your webcam or upload a photo to see if our AI thinks you resemble a dog or a cat!</p>
+            <h1>나는 어떤 동물을 닮았을까?</h1>
+            <p>사진을 업로드하여 AI가 당신을 강아지상과 고양이상 중 무엇으로 판단하는지 확인해보세요!</p>
 
             <!-- AdSense Placeholder -->
             <ins class="adsbygoogle" style="display:block; text-align:center;" data-ad-layout="in-article" data-ad-format="fluid" data-ad-client="ca-pub-5908945966023993" data-ad-slot="YOUR_AD_SLOT_ID"></ins>
             <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
 
-            <div class="mode-selector">
-                <label><input type="radio" name="mode" value="webcam" checked> Webcam</label>
-                <label><input type="radio" name="mode" value="upload"> Upload File</label>
+            <div id="upload-mode" class="mode-content">
+                <input type="file" id="image-upload" accept="image/*">
+                <div id="image-container">
+                    <img id="uploaded-image" src="#" alt="업로드된 이미지" style="display:none;"/>
+                </div>
             </div>
-
-            <div id="webcam-mode" class="mode-content"><button type="button" onclick="initWebcam()">Start Webcam</button><div id="webcam-container"></div></div>
-            <div id="upload-mode" class="mode-content" style="display: none;"><input type="file" id="image-upload" accept="image/*"><div id="image-container"><img id="uploaded-image" src="#" alt="Your upload" style="display:none;"/></div></div>
             
             <div id="label-container"></div>
-            <div id="loading" style="display:none;"><p>Loading model...</p><div class="loader"></div></div>
+            <div id="loading" style="display:none;"><p>모델을 불러오는 중입니다...</p><div class="loader"></div></div>
         </section>
 
         <section id="about" class="content-section">
-            <h2>About This Tool</h2>
-            <p>Have you ever wondered if you have the playful energy of a dog or the calm demeanor of a cat? Our "Pet-Alike" tool uses the power of machine learning to analyze your facial features and determine your animal look-alike!</p>
-            <p>This fun experiment is built using a technology called Teachable Machine by Google. We trained a computer model by showing it thousands of images of dogs and cats. The model learned to recognize the distinct patterns, shapes, and features of each animal. When you show it your face, it makes its best guess based on the patterns it learned. It's all done in your browser, and we never see or save your images.</p>
+            <h2>서비스 소개</h2>
+            <p>당신은 강아지의 활기찬 에너지를 가졌나요, 아니면 고양이의 차분한 성격을 가졌나요? 저희 'Pet-Alike' 서비스는 머신러닝 기술을 사용하여 당신의 얼굴 특징을 분석하고, 어떤 동물과 닮았는지 알려드립니다!</p>
+            <p>이 재미있는 실험은 Google의 'Teachable Machine'이라는 기술을 기반으로 만들어졌습니다. 저희는 수천 장의 강아지와 고양이 이미지를 컴퓨터 모델에 학습시켰습니다. 이 모델은 각 동물의 독특한 패턴, 모양, 특징을 인식하는 법을 배웠습니다. 당신의 얼굴 사진을 업로드하면, 모델은 학습한 패턴을 기반으로 최선의 추측을 내놓습니다. 모든 과정은 사용자의 브라우저 안에서만 이루어지며, 저희는 여러분의 이미지를 절대 보거나 저장하지 않습니다.</p>
         </section>
 
         <section id="contact" class="content-section">
-            <h2>Contact Us</h2>
-            <p>Have a question, a partnership inquiry, or just want to say hello? Use the form below to get in touch with our team.</p>
+            <h2>문의하기</h2>
+            <p>질문, 파트너십 문의, 또는 그냥 인사를 나누고 싶으시다면 아래 양식을 통해 저희 팀에 연락해주세요.</p>
             <form action="https://formspree.io/f/xojwrnop" method="POST" id="contact-form">
-                <label for="email">Your Email:</label>
+                <label for="email">이메일 주소:</label>
                 <input type="email" name="email" id="email" required>
-                <label for="message">Your Message:</label>
+                <label for="message">메시지:</label>
                 <textarea name="message" id="message" required></textarea>
-                <button type="submit">Send</button>
+                <button type="submit">보내기</button>
             </form>
         </section>
 
         <section id="privacy" class="content-section">
-            <h2>Privacy Policy</h2>
-            <p>Your privacy is critically important to us. This policy outlines how we handle your data.</p>
-            <p><strong>Image Processing:</strong> All image analysis, whether from your webcam or an uploaded file, happens entirely on your device within your web browser. Your images are never sent to our servers, and they are not stored or saved by us in any way.</p>
-            <p><strong>Webcam Access:</strong> Your web browser will ask for your permission before this site can access your webcam. Access is only used for the duration of the real-time analysis and is turned off immediately when you switch modes or leave the page.</p>
-            <p><strong>Contact Form:</strong> If you use our contact form, the information you provide (email and message) will be sent to us via the Formspree service so we can respond to your inquiry. Please do not send sensitive information through this form.</p>
+            <h2>개인정보처리방침</h2>
+            <p>여러분의 개인정보는 저희에게 매우 중요합니다. 이 방침은 저희가 데이터를 어떻게 처리하는지 설명합니다.</p>
+            <p><strong>이미지 처리:</strong> 업로드된 파일의 모든 이미지 분석은 전적으로 사용자의 기기 내 웹 브라우저에서만 발생합니다. 여러분의 이미지는 저희 서버로 전송되지 않으며, 어떤 방식으로도 저장되지 않습니다.</p>
+            <p><strong>문의 양식:</strong> 문의 양식을 사용하시는 경우, 제공하신 정보(이메일 및 메시지)는 저희가 회신할 수 있도록 Formspree 서비스를 통해 저희에게 전송됩니다. 이 양식을 통해 민감한 정보를 보내지 마십시오.</p>
         </section>
 
         <div id="disqus_thread" class="content-section"></div>
@@ -84,7 +82,7 @@
     </main>
 
     <footer>
-        <p>&copy; 2026 Pet-Alike. All Rights Reserved.</p>
+        <p>&copy; 2026 Pet-Alike. 모든 권리 보유.</p>
     </footer>
 
     <script src="main.js"></script>

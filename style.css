@@ -92,18 +92,8 @@ section {
     text-align: center;
 }
 
-.mode-selector {
-    margin: 30px 0;
-}
-
-.mode-selector label {
-    margin: 0 10px;
-    font-size: 1.1em;
-    cursor: pointer;
-}
-
-#webcam-container, #image-container {
-    margin: 20px auto;
+#image-container {
+    margin: 30px auto;
     border: 2px dashed #ccc;
     border-radius: 8px;
     width: 250px;

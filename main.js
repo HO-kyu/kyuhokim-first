@@ -1,13 +1,11 @@
-const webcamMode = document.getElementById('webcam-mode');
 const uploadMode = document.getElementById('upload-mode');
-const webcamContainer = document.getElementById('webcam-container');
 const labelContainer = document.getElementById('label-container');
 const imageUpload = document.getElementById('image-upload');
 const uploadedImage = document.getElementById('uploaded-image');
 const loadingDiv = document.getElementById('loading');
 
 const URL = "https://teachablemachine.withgoogle.com/models/u1uI_WuzB/";
-let model, webcam, maxPredictions;
+let model, maxPredictions;
 
 // --- INITIALIZATION ---
 
@@ -20,8 +18,8 @@ async function loadModel() {
         model = await tmImage.load(modelURL, metadataURL);
         maxPredictions = model.getTotalClasses();
     } catch (err) {
-        console.error("Model loading failed:", err);
-        alert("Failed to load the model. Please check the console for details.");
+        console.error("모델 로딩 실패:", err);
+        alert("모델을 불러오는데 실패했습니다. 콘솔을 확인해주세요.");
     } finally {
         loadingDiv.style.display = 'none';
     }
@@ -29,67 +27,13 @@ async function loadModel() {
 // Load model as soon as the page loads
 window.onload = loadModel;
 
-// --- MODE SWITCHING ---
-
-document.querySelectorAll('input[name="mode"]').forEach(radio => {
-    radio.addEventListener('change', (event) => {
-        if (event.target.value === 'webcam') {
-            webcamMode.style.display = 'block';
-            uploadMode.style.display = 'none';
-            if (webcam && webcam.running) webcam.stop(); // Stop webcam if running
-            labelContainer.innerHTML = '';
-        } else {
-            webcamMode.style.display = 'none';
-            uploadMode.style.display = 'block';
-            if (webcam && webcam.running) webcam.stop(); // Stop webcam if running
-            labelContainer.innerHTML = '';
-        }
-    });
-});
-
-// --- WEBCAM LOGIC ---
-
-// Setup and start the webcam
-async function initWebcam() {
-    if (!model) {
-        alert("Model not loaded yet. Please wait.");
-        return;
-    }
-    const flip = true;
-    webcam = new tmImage.Webcam(200, 200, flip);
-    try {
-        await webcam.setup();
-        await webcam.play();
-        webcamContainer.innerHTML = ''; // Clear previous canvas
-        webcamContainer.appendChild(webcam.canvas);
-        window.requestAnimationFrame(loop);
-    } catch (err) {
-        console.error("Webcam setup failed:", err);
-        alert("Could not access the webcam. Please ensure it's not in use and permissions are allowed.");
-    }
-}
-
-async function loop() {
-    if (webcam.running) {
-        webcam.update();
-        await predictFromWebcam();
-        window.requestAnimationFrame(loop);
-    }
-}
-
-async function predictFromWebcam() {
-    const prediction = await model.predict(webcam.canvas);
-    displayPrediction(prediction);
-}
-
-
 // --- UPLOAD LOGIC ---
 
 imageUpload.addEventListener('change', async (event) => {
     const file = event.target.files[0];
     if (!file) return;
     if (!model) {
-        alert("Model not loaded yet. Please wait.");
+        alert("모델이 아직 로드되지 않았습니다. 잠시만 기다려주세요.");
         return;
     }
 
@@ -110,7 +54,7 @@ imageUpload.addEventListener('change', async (event) => {
 function displayPrediction(prediction) {
     // Guard clause for empty predictions
     if (!prediction || prediction.length === 0) {
-        labelContainer.innerHTML = "Could not get a prediction. Try a different image or angle.";
+        labelContainer.innerHTML = "예측할 수 없습니다. 다른 이미지를 시도해보세요.";
         return;
     }
 
@@ -125,11 +69,16 @@ function displayPrediction(prediction) {
     }
 
     let emoji = '';
+    let animalName = '';
     if (bestClass.toLowerCase().includes('dog')) {
         emoji = '🐶';
+        animalName = '강아지';
     } else if (bestClass.toLowerCase().includes('cat')) {
         emoji = '🐱';
+        animalName = '고양이';
+    } else {
+        animalName = bestClass;
     }
 
-    labelContainer.innerHTML = `You look like a ${bestClass}! ${emoji} (Confidence: ${Math.round(highestProb * 100)}%)`;
+    labelContainer.innerHTML = `당신은 ${animalName}상 입니다! ${emoji} (정확도: ${Math.round(highestProb * 100)}%)`;
 }
